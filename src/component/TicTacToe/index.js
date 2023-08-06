@@ -1,24 +1,79 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GridComponent from "./GridComponent";
 import styles from "./tictactoe.module.scss";
 const TicTacToe = () => {
+  const initialState = {
+    1: [],
+    2: [],
+  };
+  const WinningValues = [
+    //Row Wises
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    //Column Wise
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    //Diagonal
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  const [isGameFinished, setIsGameFinished] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState(1);
-  const [currentPlayerData, setCurrentPlayerData] = useState({ 1: [], 2: [] });
+  const [currentPlayerData, setCurrentPlayerData] = useState(initialState);
   const [firstPlayer, setFirstPlayer] = useState([]);
   const [secondPlayer, setSecondPlayer] = useState([]);
+  const [matchWonBy, setMatchWonBy] = useState();
+  const checkPlayerCurrentStatus = (playerData) => {
+    if (playerData[1].length > 2 || playerData[2].length > 2) {
+      Object.keys(playerData).some((item) => {
+        const currentPlayerData = playerData[item];
+        if (currentPlayerData.length > 2) {
+          if (
+            WinningValues.some((item) =>
+              item.every((val) => currentPlayerData.includes(val))
+            )
+          ) {
+            setMatchWonBy(`Player ${item}`);
+            return true;
+          }
+        }
+      });
+    }
+  };
+  useEffect(() => {
+    if (
+      currentPlayerData[1].length + currentPlayerData[2].length === 9 &&
+      !matchWonBy
+    ) {
+      setMatchWonBy("Match Drawn");
+    }
+  }, [currentPlayerData[1].length, currentPlayerData[2].length]);
   const onChangePlayerData = (data) => {
-    if (!currentPlayerData[currentPlayer]?.includes(data)) {
-      setCurrentPlayerData({
+    if (
+      !currentPlayerData[1]?.includes(data) &&
+      !currentPlayerData[2]?.includes(data)
+    ) {
+      const updatedCurrentPlayerData = {
         ...currentPlayerData,
         [currentPlayer]: [...currentPlayerData[currentPlayer], data],
-      });
+      };
+      setCurrentPlayerData(updatedCurrentPlayerData);
       setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+      checkPlayerCurrentStatus(updatedCurrentPlayerData);
     }
+  };
+  const handleClearGame = () => {
+    setCurrentPlayer(1);
+    setCurrentPlayerData(initialState);
+    setMatchWonBy("");
   };
   const grid = new Array(9).fill(0);
   return (
     <div>
+      {matchWonBy}
       <div className={styles.gridRow}>
         {grid.map((item, index) => {
           return (
@@ -31,6 +86,7 @@ const TicTacToe = () => {
           );
         })}
       </div>
+      <button onClick={handleClearGame}>Clear Game</button>
     </div>
   );
 };
