@@ -31,6 +31,7 @@ const TicTacToe = () => {
   const [secondPlayer, setSecondPlayer] = useState([]);
   const [matchWonBy, setMatchWonBy] = useState();
   const [count, setCount] = useState(0);
+  const [disablePreviousPlayer, setDisablePreviousPlayer] = useState(1);
   const checkPlayerCurrentStatus = (playerData) => {
     if (playerData[1].length > 2 || playerData[2].length > 2) {
       Object.keys(playerData).some((item) => {
@@ -52,7 +53,9 @@ const TicTacToe = () => {
     socket.on("currentPlayerData", (val) => {
       const { currentPlayerData, currentPlayer } = val;
       setCurrentPlayerData(currentPlayerData);
+      setDisablePreviousPlayer(currentPlayer);
       setCurrentPlayer(currentPlayer);
+      checkPlayerCurrentStatus(currentPlayerData);
     });
   }, [socket]);
 
@@ -66,6 +69,10 @@ const TicTacToe = () => {
   }, [currentPlayerData[1].length, currentPlayerData[2].length]);
 
   const onChangePlayerData = (data) => {
+    if (currentPlayer !== disablePreviousPlayer) {
+      alert("Waiting for other player input");
+      return;
+    }
     if (
       !currentPlayerData[1]?.includes(data) &&
       !currentPlayerData[2]?.includes(data)
@@ -80,6 +87,7 @@ const TicTacToe = () => {
       });
       setCurrentPlayerData(updatedCurrentPlayerData);
       setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+      setDisablePreviousPlayer(currentPlayer);
       checkPlayerCurrentStatus(updatedCurrentPlayerData);
     }
   };
