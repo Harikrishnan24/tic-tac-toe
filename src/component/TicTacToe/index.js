@@ -1,7 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import GridComponent from "./GridComponent";
+import { io } from "socket.io-client";
+
 import styles from "./tictactoe.module.scss";
+
+const socket = io("ws://localhost:3000");
 const TicTacToe = () => {
   const initialState = {
     1: [],
@@ -26,6 +30,7 @@ const TicTacToe = () => {
   const [firstPlayer, setFirstPlayer] = useState([]);
   const [secondPlayer, setSecondPlayer] = useState([]);
   const [matchWonBy, setMatchWonBy] = useState();
+  const [count, setCount] = useState(0);
   const checkPlayerCurrentStatus = (playerData) => {
     if (playerData[1].length > 2 || playerData[2].length > 2) {
       Object.keys(playerData).some((item) => {
@@ -44,6 +49,14 @@ const TicTacToe = () => {
     }
   };
   useEffect(() => {
+    socket.on("currentPlayerData", (val) => {
+      const { currentPlayerData, currentPlayer } = val;
+      setCurrentPlayerData(currentPlayerData);
+      setCurrentPlayer(currentPlayer);
+    });
+  }, [socket]);
+
+  useEffect(() => {
     if (
       currentPlayerData[1].length + currentPlayerData[2].length === 9 &&
       !matchWonBy
@@ -51,6 +64,7 @@ const TicTacToe = () => {
       setMatchWonBy("Match Drawn");
     }
   }, [currentPlayerData[1].length, currentPlayerData[2].length]);
+
   const onChangePlayerData = (data) => {
     if (
       !currentPlayerData[1]?.includes(data) &&
@@ -60,6 +74,10 @@ const TicTacToe = () => {
         ...currentPlayerData,
         [currentPlayer]: [...currentPlayerData[currentPlayer], data],
       };
+      socket.emit("updatedCurrentPlayerData", {
+        currentPlayerData: updatedCurrentPlayerData,
+        currentPlayer: currentPlayer === 1 ? 2 : 1,
+      });
       setCurrentPlayerData(updatedCurrentPlayerData);
       setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
       checkPlayerCurrentStatus(updatedCurrentPlayerData);
@@ -70,6 +88,7 @@ const TicTacToe = () => {
     setCurrentPlayerData(initialState);
     setMatchWonBy("");
   };
+
   const grid = new Array(9).fill(0);
   return (
     <div>
@@ -78,6 +97,7 @@ const TicTacToe = () => {
         {grid.map((item, index) => {
           return (
             <GridComponent
+              key={index}
               value={index}
               currentPlayer={currentPlayer}
               currentPlayerData={currentPlayerData}
