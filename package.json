@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"nodemon index.js",
-    "build":"npx install && npx install --profile frontend && npx run build --prefix frontend"
+    "start":"node index.js",
+    "server":"nodemon index.js",
+    "build":"npm install && npm install --prefix frontend && npm run build --prefix frontend"
 
   },
   "keywords": [],
