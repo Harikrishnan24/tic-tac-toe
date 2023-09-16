@@ -6,7 +6,15 @@ const io = new Server(3000, {
   },
 });
 io.on("connection", (socket) => {
+  let roomId = "";
   socket.on("updatedCurrentPlayerData", (...args) => {
-    socket.broadcast.emit("currentPlayerData", ...args);
+    if (roomId) {
+      socket.to(roomId).emit("currentPlayerData", ...args);
+    }
+  });
+  socket.on("joinRoom", (val) => {
+    const { id } = val;
+    socket.join(id);
+    roomId = id;
   });
 });

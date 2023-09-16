@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import GridComponent from "./GridComponent";
 import { io } from "socket.io-client";
 
@@ -24,6 +25,8 @@ const TicTacToe = () => {
     [0, 4, 8],
     [2, 4, 6],
   ];
+  const router = useParams();
+  const { id } = router;
   const [isGameFinished, setIsGameFinished] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [currentPlayerData, setCurrentPlayerData] = useState(initialState);
@@ -49,6 +52,11 @@ const TicTacToe = () => {
       });
     }
   };
+
+  useEffect(() => {
+    socket.emit("joinRoom", { id });
+  }, []);
+
   useEffect(() => {
     socket.on("currentPlayerData", (val) => {
       const { currentPlayerData, currentPlayer } = val;
@@ -96,7 +104,6 @@ const TicTacToe = () => {
     setCurrentPlayerData(initialState);
     setMatchWonBy("");
   };
-
   const grid = new Array(9).fill(0);
   return (
     <div>
