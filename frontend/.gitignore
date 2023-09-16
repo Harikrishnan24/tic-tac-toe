@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/tic-tac-toe-server/node_modules
 /.pnp
 .pnp.js
 
