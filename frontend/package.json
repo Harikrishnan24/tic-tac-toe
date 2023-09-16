@@ -18,5 +18,8 @@
     "socket.io-client": "^4.7.2",
     "tic-tac-toe-server": "file:..",
     "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=16 <17"
   }
 }
