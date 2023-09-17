@@ -2,13 +2,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import GridComponent from "./GridComponent";
-import { io } from "socket.io-client";
+import { io, Manager } from "socket.io-client";
 
 import styles from "./tictactoe.module.scss";
 import { BACKEND_URL } from "../../../../urlConfig";
 
-const socket = io(`ws://${BACKEND_URL}:3000`);
-
+const manager = new Manager(`https://hari-tic-tac-toe.onrender.com:3000`);
+const socket = manager.socket("/");
 const TicTacToe = () => {
   const initialState = {
     1: [],
