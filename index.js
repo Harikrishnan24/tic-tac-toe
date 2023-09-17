@@ -1,8 +1,8 @@
 import { Server } from "socket.io";
-
+import { FRONTEND_URL } from "./urlConfig";
 const io = new Server(3000, {
   cors: {
-    origin: "http://localhost:3001",
+    origin: `${FRONTEND_URL}:3001`,
   },
 });
 io.on("connection", (socket) => {

@@ -5,8 +5,10 @@ import GridComponent from "./GridComponent";
 import { io } from "socket.io-client";
 
 import styles from "./tictactoe.module.scss";
+import { BACKEND_URL } from "../../../../urlConfig";
 
-const socket = io("ws://localhost:3000");
+const socket = io(`ws://${BACKEND_URL}:3000`);
+
 const TicTacToe = () => {
   const initialState = {
     1: [],
